@@ -12,8 +12,11 @@ import java.io.InputStreamReader;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import com.jasperalani.IMSMain;
+import com.jasperalani.Product;
 
 public class IMSGUI extends JFrame implements ActionListener {
 	
@@ -23,11 +26,13 @@ public class IMSGUI extends JFrame implements ActionListener {
 	IMSMain main;
 	
 	private JButton addProduct, outputProducts, settings;
+	private JButton search;
+	
+	private JTextField searchTF;
 	
 	private static final long serialVersionUID = 1L;
 	
 	public IMSGUI() {
-		setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		
 		main = new IMSMain();
 		
@@ -41,21 +46,37 @@ public class IMSGUI extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		
+		JPanel mainPanel = new JPanel(new BorderLayout());
 		
-		add(new JLabel("Hi, " + userName + "."));
+		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		
+		topPanel.add(new JLabel("Hi, " + userName + "."));
 		
 		addProduct = new JButton("Add Product");
-		add(addProduct);
+		topPanel.add(addProduct);
 		addProduct.addActionListener(this);
 		
 		outputProducts = new JButton("Output");
-		add(outputProducts);
+		topPanel.add(outputProducts);
 		outputProducts.addActionListener(this);
 		
 		settings = new JButton("Settings");
-		add(settings);
+		topPanel.add(settings);
 		settings.addActionListener(this);
 		
+		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		
+		searchTF = new JTextField(50);
+		searchPanel.add(searchTF);
+		
+		search = new JButton("Search");
+		searchPanel.add(search);
+		search.addActionListener(this);
+		
+		mainPanel.add(topPanel, BorderLayout.NORTH);
+		mainPanel.add(searchPanel, BorderLayout.CENTER);
+		
+		getContentPane().add(mainPanel);
 
 		setResizable(false);
 		setSize(600, 600);
@@ -73,12 +94,25 @@ public class IMSGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		if (evt.getSource() == addProduct) {
 			new AddProductGUI().setVisible(true);
-		} else if (evt.getSource() == outputProducts) {
+		}
+		if (evt.getSource() == outputProducts) {
 			for(int i = 0; i < IMSMain.products.size(); i++) {
 				System.out.println(IMSMain.products.get(i).getProductAsString());
 			}
-		} else if (evt.getSource() == settings) {
+		}
+		if (evt.getSource() == settings) {
 			new SettingsGUI().setVisible(true);
+		}
+		if (evt.getSource() == search) {
+			searchProducts(searchTF.getText().toString().toLowerCase());
+		}
+	}
+	
+	public void searchProducts(String input) {
+		for(Product p : IMSMain.products) {
+			if(p.getName() != null && p.getName().toLowerCase().contains(input)) {
+				System.out.println("Found: " + p.getProductAsString());
+			}
 		}
 	}
 
