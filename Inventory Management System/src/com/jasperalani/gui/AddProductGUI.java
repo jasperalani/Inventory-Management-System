@@ -70,7 +70,7 @@ public class AddProductGUI extends JFrame implements ActionListener {
 	    ft2.setMaximum(Integer.MAX_VALUE);
 	    ft2.setAllowsInvalid(false);
 	    ft2.setCommitsOnValidEdit(true);
-	    idTF = new JFormattedTextField(ft1);
+	    idTF = new JFormattedTextField(ft2);
 	    idTF.setPreferredSize(new Dimension(150, 20));
 	    add(idTF);
 	    
@@ -98,6 +98,7 @@ public class AddProductGUI extends JFrame implements ActionListener {
 	public void actionPerformed (ActionEvent e) {
 		IMSMain.products.add(new Product(nameTF.getText().toString(), Integer.valueOf(quantityTF.getText().toString()), Long.valueOf(priceTF.getText().toString()), Integer.valueOf(idTF.getText().toString()), categoryTF.getText().toString()));
 		IMSMain.saveProducts();
+		new IMSGUI();
 		this.setVisible(false);
 	}
 

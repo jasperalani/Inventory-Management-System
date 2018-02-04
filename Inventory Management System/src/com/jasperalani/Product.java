@@ -20,6 +20,25 @@ public class Product implements Serializable {
 		this.category = category;
 	}
 	
+	public Object getItemAtPos(int i) {
+		switch (i) {
+			case 0:
+				return this.name;
+			case 1:
+				return this.quantity;
+			case 2:
+				return this.price;
+			case 3:
+				return this.id;
+			case 4:
+				return this.category;
+			default:
+				return this.name;
+			
+		}
+			
+	}
+	
 	public String getProductAsString() {
 		String product = this.name + ", " + String.valueOf(this.quantity) + ", " + String.valueOf(this.price) + ", " + String.valueOf(this.id) + ", " + category;
 		return product;

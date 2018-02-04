@@ -13,7 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 import com.jasperalani.IMSMain;
 import com.jasperalani.Product;
@@ -25,10 +28,16 @@ public class IMSGUI extends JFrame implements ActionListener {
 	
 	IMSMain main;
 	
-	private JButton addProduct, outputProducts, settings;
-	private JButton search;
+	private JButton addProduct, removeProduct, settings;
+	private JButton search, X;
 	
 	private JTextField searchTF;
+	
+	public String[] columns;
+	
+	private JPanel mainPanel, centerPanel;
+	
+	private DefaultTableModel model;
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -46,7 +55,7 @@ public class IMSGUI extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		
-		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel = new JPanel(new BorderLayout());
 		
 		JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		
@@ -56,9 +65,9 @@ public class IMSGUI extends JFrame implements ActionListener {
 		topPanel.add(addProduct);
 		addProduct.addActionListener(this);
 		
-		outputProducts = new JButton("Output");
-		topPanel.add(outputProducts);
-		outputProducts.addActionListener(this);
+		removeProduct = new JButton("Remove Product");
+		topPanel.add(removeProduct);
+		removeProduct.addActionListener(this);
 		
 		settings = new JButton("Settings");
 		topPanel.add(settings);
@@ -66,15 +75,50 @@ public class IMSGUI extends JFrame implements ActionListener {
 		
 		JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 		
-		searchTF = new JTextField(50);
+		searchTF = new JTextField(25);
 		searchPanel.add(searchTF);
 		
 		search = new JButton("Search");
-		searchPanel.add(search);
 		search.addActionListener(this);
+		searchPanel.add(search);
 		
+		X = new JButton("X");
+		X.addActionListener(this);
+		if(IMSMain.searched) { searchPanel.add(X); }
+
+		columns = new String[] {
+	            "Name", "Quantity", "Price", "ID", "Category"
+	        };
+		
+		model = new DefaultTableModel(columns, 0);
+		JTable table = new JTable(model);
+        
+        Object[] row = new Object[5];
+        
+        if (!IMSMain.searched) {
+        	
+        	for(int i = 0; i < IMSMain.products.size(); i++) {
+        		for(int j = 0; j < 5; j++) {
+            		row[j] = IMSMain.products.get(i).getItemAtPos(j);
+            	}
+        		model.addRow(row);
+        	}
+        	
+        } else {
+        	
+        	for(int i = 0; i < 5; i++) {
+        		row[i] = IMSMain.dataSearch[0][i];
+        	}
+        	
+        	model.addRow(row);
+        }
+        
+        centerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        centerPanel.add(searchPanel, BorderLayout.NORTH);
+        centerPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+        
 		mainPanel.add(topPanel, BorderLayout.NORTH);
-		mainPanel.add(searchPanel, BorderLayout.CENTER);
+		mainPanel.add(centerPanel, BorderLayout.CENTER);
 		
 		getContentPane().add(mainPanel);
 
@@ -94,11 +138,11 @@ public class IMSGUI extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent evt) {
 		if (evt.getSource() == addProduct) {
 			new AddProductGUI().setVisible(true);
+			this.setVisible(false);
 		}
-		if (evt.getSource() == outputProducts) {
-			for(int i = 0; i < IMSMain.products.size(); i++) {
-				System.out.println(IMSMain.products.get(i).getProductAsString());
-			}
+		if (evt.getSource() == removeProduct) {
+			new RemoveProductGUI().setVisible(true);
+			this.setVisible(false);
 		}
 		if (evt.getSource() == settings) {
 			new SettingsGUI().setVisible(true);
@@ -106,13 +150,28 @@ public class IMSGUI extends JFrame implements ActionListener {
 		if (evt.getSource() == search) {
 			searchProducts(searchTF.getText().toString().toLowerCase());
 		}
+		if (evt.getSource() == X) {
+			if(IMSMain.searched) {
+				IMSMain.searched = false;
+				this.setVisible(false);
+				new IMSGUI();
+			}
+		}
 	}
 	
 	public void searchProducts(String input) {
-		for(Product p : IMSMain.products) {
-			if(p.getName() != null && p.getName().toLowerCase().contains(input)) {
-				System.out.println("Found: " + p.getProductAsString());
+		if(!input.equals("")) {
+			for(Product p : IMSMain.products) {
+				if(p.getName() != null && p.getName().toLowerCase().contains(input)) {
+					IMSMain.dataSearch = new Object[1][5];
+					for(int i = 0; i < 5; i++) {
+						IMSMain.dataSearch[0][i] = p.getItemAtPos(i);
+					}
+				}
 			}
+			IMSMain.searched = true;
+			this.setVisible(false);
+			new IMSGUI();
 		}
 	}
 

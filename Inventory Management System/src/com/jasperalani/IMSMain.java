@@ -9,6 +9,10 @@ public class IMSMain {
 	
 	public static ArrayList<Product> products;
 	
+	//TODO: Remove
+	public static boolean searched = false;
+	public static Object[][] dataSearch;
+	
 	public IMSMain() {
 		
 		products = new ArrayList<Product>();
